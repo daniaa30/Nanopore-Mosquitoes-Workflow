@@ -1,0 +1,6 @@
+conda install -c bioconda porechop #installs porechop 
+conda activate porechop
+bash
+for file in *.fastq; do
+    porechop -i "$file" -o "trimmed_$file"
+done
