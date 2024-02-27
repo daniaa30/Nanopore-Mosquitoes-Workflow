@@ -1,1 +1,27 @@
+conda install -c bioconda kraken2 #installs kraken2
+conda activate kraken2 '#activates kraken2 environment
+mkdir mykrakendatabase
 
+kraken2-build --download-taxonomy --db mykrakendatabase #installs taxonomy from the NCBI
+kraken2-build --download-library human --db mykrakendatabase #this RefSeq of human was added because they are part of the last blood meals
+
+# Whole Genome RefSeq downloaded from NCBI were added to the library/database :
+ kraken2-build --add-to-library '/pathtoRefSeqdirectory/' --db mykrakendatabase
+
+#This bash script can be used to add multiple files to the library
+bash
+for '/pathtoRefSeqfiles/' in /pathtoRefSeqfiles/*.fa
+do
+    kraken2-build --add-to-library '/pathtoRefSeqfiles/' --db mykrakendatabase
+done
+
+#After the RefSeq is added, this command is run to finalize the database
+ kraken2-build --build --db mykrakendatabase #finalize the database
+
+kraken2 --db mykrakendatabase 
+
+
+#Krona visualizes kraken2 reports
+conda install -c bioconda krona #installs krona
+conda acivate krona #activates krona environment
+ktImportTaxonomy -t 5 -m 3 -o multi-krona.html *.report #this command works on multiple kraken2 reports. 
