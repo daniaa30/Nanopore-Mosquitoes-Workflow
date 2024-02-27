@@ -1,0 +1,43 @@
+from Bio import SeqIO
+from Bio.Blast import NCBIWWW
+import os
+import subprocess
+import sys
+
+file_=sys.argv[1]
+dirname=os.path.split(file_)[0]
+blastdb="/home/stud11/NAS/Mosquitoes/blast_genes/blastdb.fasta"
+outdirname='%s/BLAST'%(dirname)
+if not os.path.exists(outdirname):
+    os.mkdir(outdirname)
+filename=os.path.split(file_)[1].split('.fa')[0]
+blasthit=[]
+for seq in SeqIO.parse(file_,'fasta'):
+    
+    print('blasting contig {}'.format(seq.name))
+    outname='%s/%s'%(outdirname,filename)
+    outfilename='%s/%s.fasta'%(outname,seq.name)
+    blastoutfilename='%s/%s.blast.csv'%(outname,seq.name)
+    if not os.path.exists(outname):
+        os.mkdir(outname)
+
+        
+    SeqIO.write(seq,outfilename,'fasta')
+
+    cmd=f'blastn -db %s -query %s -outfmt 10 -out %s'%(blastdb,outfilename,blastoutfilename)
+    cmd2=f'sed -i 1i\'qseqid,sseqid,pident,length,mismatch,gapopen,qstart,qend,sstart,send,evalue,bitscore\' %s'%(blastoutfilename)
+    
+    print(cmd)
+    subprocess.run(cmd,shell=True)
+
+    print(cmd2)
+    subprocess.run(cmd2,shell=True)
+    qseqid	sseqid	pident	length	mismatch	gapopen	qstart	qend	sstart	send	evalue	bitscore
+    res=os.popen('tail -n +2 %s | head -n 1'%(blastoutfilename)).read()    
+    res='%s,%s'%(filename,res)   
+    print(outfilename)   
+    blasthit.append(res)
+combined_blast_report='%s/summary.blast.combined.csv'%(outname)
+with open(combined_blast_report,'w') as myout:    
+    myout.write('\n'.join(blasthit))
+
