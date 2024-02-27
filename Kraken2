@@ -17,8 +17,10 @@ done
 
 #After the RefSeq is added, this command is run to finalize the database
  kraken2-build --build --db mykrakendatabase #finalize the database
+#run
+kraken2 --db mykrakendatabase --threads 10 --unclassified-out UNCLASSIFIED_OUT --classified-out CLASSIFIED_OUT --report Krakenreport  --confidence 1 '/pathtofastqfiles/'
+#a script took longer run-time due to the large size of the files.
 
-kraken2 --db mykrakendatabase 
 
 
 #Krona visualizes kraken2 reports
