@@ -27,3 +27,6 @@ kraken2 --db mykrakendatabase --threads 10 --unclassified-out UNCLASSIFIED_OUT -
 conda install -c bioconda krona #installs krona
 conda acivate krona #activates krona environment
 ktImportTaxonomy -t 5 -m 3 -o multi-krona.html *.report #this command works on multiple kraken2 reports. 
+
+
+#Another database was built with the COI genes of mosquitoes and last blood meals. All the steps listed here were performed agan#in.
