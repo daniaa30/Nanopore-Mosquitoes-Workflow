@@ -1,0 +1,41 @@
+#Flye was used for the Assembly 
+conda install flye #installs flye
+conda activate flye #activate flye env
+
+scriptdir=$(dirname $0)
+fastqdir=$1
+directoryname=$(basename $fastqdir)
+allfastq=(${fastqdir}/*.fastq)
+
+threads=10
+blastdb= /home/stud11/NAS/Mosquitoes/blast_genes/blastdb.fasta 
+
+outdir=ASSEMBLY_RESULT_${directoryname}
+mkdir $outdir/
+rm $outdir/good_assemblies.txt $outdir/bad_assemblies.txt
+touch $outdir/good_assemblies.txt
+touch $outdir/bad_assemblies.txt
+
+mkdir $outdir/GOOD_ASSEMBLIES
+mkdir $outdir/ASSEMBLIES
+mkdir $outdir/QUAST_REPORTS
+for fastq in ${allfastq[@]}
+do
+bname=$(basename $fastq .fastq)
+flye --nano-raw $fastq --meta -t $threads --out-dir $outdir/ASSEMBLIES/${bname} -i 10
+if [ -f $outdir/ASSEMBLIES/"$bname"/assembly.fasta ]
+then
+quast.py -o $outdir/QUAST_REPORTS/${bname} $outdir/ASSEMBLIES/${bname}/assembly.fasta
+echo "Assembly was successful for ${bname}"
+cp $outdir/ASSEMBLIES/${bname}/assembly.fasta $outdir/GOOD_ASSEMBLIES/${bname}.fasta
+python ${scriptdir}/blastcontigs.py $outdir/GOOD_ASSEMBLIES/${bname}.fasta
+echo "${bname}" >> $outdir/good_assemblies.txt
+else
+echo "${bname}" >> $outdir/bad_assemblies.txt
+a=b
+fi
+
+done
+cat ${outdir}/GOOD_ASSEMBLIES/BLAST/*/summary.blast.combined.csv | sed 1i'sample,qseqid,sseqid,pident,length,mismatch,gapopen,qstart,qend,sstart,send,evalue,bitscore' > ${outdir}/best_hits.csv
+
+
