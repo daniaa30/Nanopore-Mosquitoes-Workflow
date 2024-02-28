@@ -6,5 +6,5 @@ Automated analysis of nanopore sequencing of wild-caught mosquitoes in Africa wi
 
 The total number of nanopore data I worked on were 384 FASTQ files. The data were handed over to me after Basecalling with Guppy.
 
-Although, in the end the main aim of the thesis was not realized due to PCR errors during sequencing,  I hope that this documentation will be useful to any researcher interested in Nanopore analysis :-)
+Although, in the end the main aim of the thesis was not realized due to barcoding errors during sequencing,  I hope that this documentation will be useful to any researcher interested in Nanopore analysis :-)
 
