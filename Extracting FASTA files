@@ -1,0 +1,30 @@
+from Bio import SeqIO
+
+def extract_sequences_by_barcode(input_fasta, output_dir):
+    # Create a dictionary to store sequences by barcode
+    barcode_sequences = {}
+    
+    # Parse the input FASTA file
+    for record in SeqIO.parse(input_fasta, "fasta"):
+        # Extract barcode from sequence ID
+        barcode = record.id.split("_")[0]
+        
+        # Add sequence to the dictionary based on barcode
+        if barcode not in barcode_sequences:
+            barcode_sequences[barcode] = []
+        barcode_sequences[barcode].append(record)
+    
+    # Write sequences to separate FASTA files based on barcode
+    for barcode, sequences in barcode_sequences.items():
+        output_file = f"{output_dir}/sequences_{barcode}.fasta"
+        with open(output_file, "w") as out_handle:
+            SeqIO.write(sequences, out_handle, "fasta")
+
+# Input FASTA file containing sequences with different barcodes
+input_fasta = "/home/stud11/NAS/Mosquitoes/Nici_Mosquito/Nici_Mosquito_fastq/minimap/results/sequences_output.fasta"
+
+# Directory to save extracted sequences
+output_dir = "extracted_sequences"
+
+# Extract sequences by barcode
+extract_sequences_by_barcode(input_fasta, output_dir)
