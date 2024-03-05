@@ -1,0 +1,54 @@
+library(ggplot2)
+
+blast <- read.csv('Documents/ajoke.csv', header = T)
+small_samples1 <- ggplot(blast, aes(x = qseqID, y = pident, fill = sseqID)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = sprintf("%.2f", pident)),
+            position = position_stack(vjust = 0.5),
+            size = 3) +
+  labs(x = 'qseqID', y = 'pident (%)', title = 'Abundance of sseqID for each Sample Contig') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 7, angle = 45, face = "italic", hjust = 1)) +
+  facet_wrap(~ SampleID) +
+  theme(strip.placement = "outside")
+ggsave('plot1.png', small_samples1, dpi = 300, height = 8, width = 11, bg = 'white')
+
+
+blast2 <- read.csv('Documents/mosquito_try_best_hits.csv', header = T)
+onesample <- ggplot(blast2, aes(x = qseqid, y = pident, fill = sseqid)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = sprintf("%.2f", pident)),
+            position = position_stack(vjust = 0.5),
+            size = 3) +
+  labs(x = 'qseqID', y = 'pident (%)', title = 'Abundance of sseqID for each Sample Contig') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 7, angle = 45, face = "italic", hjust = 1)) +
+  facet_wrap(~ sample) +
+  theme(strip.placement = "outside")
+ggsave('plot2.png', onesample, dpi = 300, height = 8, width = 11, bg = 'white')
+
+blast3 <- read.csv('Documents/mosquito_turtle_best_hits.csv', header = T)
+small <- ggplot(blast3, aes(x = qseqid, y = pident, fill = sseqid)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = sprintf("%.2f", pident)),
+            position = position_stack(vjust = 0.5),
+            size = 3) +
+  labs(x = 'qseqID', y = 'pident (%)', title = 'Abundance of sseqID for each Sample Contig') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 7, angle = 45, face = "italic", hjust = 1)) +
+  facet_wrap(~ sample) +
+  theme(strip.placement = "outside")
+ggsave('plot3.png', small, dpi = 300, height = 8, width = 11, bg = 'white')
+
+blast4 <- read.csv('Documents/insects_best_hits.csv', header = T)
+big <- ggplot(blast4, aes(x = qseqid, y = pident, fill = sseqid)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = sprintf("%.2f", pident)),
+            position = position_stack(vjust = 0.5),
+            size = 3, angle = 90) +
+  labs(x = 'qseqID', y = 'pident (%)', title = 'Abundance of sseqID for each Sample Contig') +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 7, angle = 45, face = "italic", hjust = 1)) +
+  facet_wrap(~ sample) +
+  theme(strip.placement = "outside")
+ggsave('plot4.png', big, dpi = 300, height = 8, width = 11, bg = 'white')
