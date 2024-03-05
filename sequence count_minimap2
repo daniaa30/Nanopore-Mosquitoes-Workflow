@@ -1,0 +1,36 @@
+# Output file name
+output_file="sequences_output.fasta"
+
+# Loop through each fasta file
+for file in *.fasta; do
+    # Check if file is non-empty
+    if [ -s "$file" ]; then
+        echo "Contents of $file:" >> "$output_file"
+        # Print sequences and append to output file
+        awk '/^>/ { if (seq) { print seq }; print; seq=""; } !/^>/ { seq = seq $0 } END { print seq }' "$file" >> "$output_file"
+    fi
+done
+
+echo "Sequences of non-empty files have been saved in $output_file
+
+#!/bin/bash
+
+# Initialize counters for empty and non-empty files
+empty_count=0
+non_empty_count=0
+
+# Iterate over all files in the current directory with the .fasta extension
+for file in *.fasta; do
+    # Check if the file is empty
+    if [ ! -s "$file" ]; then
+        # Increment the empty file count
+        ((empty_count++))
+    else
+        # Increment the non-empty file count
+        ((non_empty_count++))
+    fi
+done
+
+# Print the counts
+echo "Number of empty FASTA files: $empty_count"
+echo "Number of non-empty FASTA files: $non_empty_count"
