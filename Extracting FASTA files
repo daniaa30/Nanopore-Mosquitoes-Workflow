@@ -28,3 +28,10 @@ output_dir = "extracted_sequences"
 
 # Extract sequences by barcode
 extract_sequences_by_barcode(input_fasta, output_dir)
+
+
+
+#counting number of reads in fasta file
+grep -c "^>" file.fasta
+#counting number of reads in fastq files
+awk '{s++}END{print s/4}' file.fastq
