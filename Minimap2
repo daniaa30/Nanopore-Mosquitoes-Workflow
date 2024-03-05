@@ -1,0 +1,94 @@
+import os
+import subprocess
+import pysam
+
+def run_minimap(fastq_file, consensus_fasta, output_sam):
+    # Run minimap on the fastq file using the consensus fasta as a reference
+    minimap_command = f"minimap2 -ax map-ont {consensus_fasta} {fastq_file} > {output_sam}"
+    print(minimap_command)  # Print the command for debugging
+    subprocess.run(minimap_command, shell=True, check=True)
+
+def remove_soft_clips_and_errors(read):
+    # Check if alignment information is available
+    if read.query_alignment_start is not None and read.query_alignment_end is not None:
+        # Check if query sequence is available
+        if read.query_sequence is not None:
+            # Extract aligned portion of the read
+            aligned_sequence = read.query_sequence[read.query_alignment_start:read.query_alignment_end]
+
+            # Check if cigartuples is not None
+            if read.cigartuples is not None:
+                # Remove soft clips (operation 4), hard clips (operation 5), and insertions (operation 1)
+                new_cigar = []
+                for op, length in read.cigartuples:
+                    if op not in {4, 5, 1}:  # Keep all operations except soft clips, hard clips, and insertions
+                        new_cigar.append((op, length))
+                    elif op == 1 and length > 50:  # Handle large insertions
+                        # Skip the operation and remove associated nucleotides
+                        if aligned_sequence is not None:  # Check if aligned_sequence is not None
+                            aligned_sequence = aligned_sequence[:-length]
+
+                # Update the CIGAR string
+                read.cigartuples = new_cigar
+
+                # Update the query sequence if it's not None
+                read.query_sequence = aligned_sequence
+
+    return read
+
+
+def write_fasta(output_fasta, reads):
+    with open(output_fasta, "w") as fasta_file:
+        for read in reads:
+            # Write read ID and sequence to the FASTA file
+            fasta_file.write(f">{read.query_name}\n{read.query_sequence}\n")
+
+def process_sam_file(input_sam, output_sam, output_fasta):
+    modified_reads = []
+
+    with pysam.AlignmentFile(input_sam, "rb") as samfile:
+        with pysam.AlignmentFile(output_sam, "wh", header=samfile.header) as out_sam:
+            for read in samfile.fetch():
+                # Skip processing if the read is unmapped
+                if read.is_unmapped:
+                    continue
+
+                # Process and write the modified read to SAM file
+                modified_read = remove_soft_clips_and_errors(read)
+                out_sam.write(modified_read)
+
+                # Append the modified read to the list for FASTA output
+                modified_reads.append(modified_read)
+
+    # Write modified reads to FASTA file
+    write_fasta(output_fasta, modified_reads)
+
+if __name__ == "__main__":
+    input_fastq_dir = "./"  # Replace with the directory containing your fastq files
+    consensus_fastq_dir = "./"  # Replace with the directory containing your consensus FASTA files
+    output_dir = "./results/"  # Replace with the directory where you want to store the output files
+
+    # Create the output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Iterate over consensus FASTA files
+    for consensus_fasta_file in os.listdir(consensus_fastq_dir):
+        if consensus_fasta_file.endswith(".fasta"):
+            # Construct the path to the current consensus fasta file
+            consensus_fasta_path = os.path.join(consensus_fastq_dir, consensus_fasta_file)
+            
+            # Iterate over fastq files
+            for fastq_file in os.listdir(input_fastq_dir):
+                if fastq_file.endswith(".fastq"):
+                    # Construct output filenames using the base name of the consensus FASTA file
+                    output_base_name = os.path.splitext(consensus_fasta_file)[0]
+                    output_sam = os.path.join(output_dir, f"{fastq_file.split('.')[0]}_{output_base_name}.sam")
+                    output_sam_file = os.path.join(output_dir, f"{fastq_file.split('.')[0]}_{output_base_name}_output.sam")
+                    output_fasta_file = os.path.join(output_dir, f"{fastq_file.split('.')[0]}_{output_base_name}_output.fasta")
+
+                    # Run minimap
+                    run_minimap(os.path.join(input_fastq_dir, fastq_file), consensus_fasta_path, output_sam)
+
+                    # Process the generated SAM file
+                    process_sam_file(output_sam, output_sam_file, output_fasta_file)
+
