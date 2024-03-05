@@ -1,0 +1,35 @@
+import matplotlib.pyplot as plt
+
+# Data
+x_labels = ['Nici', 'Mosquito_try', 'Mosquito_Turtle', 'Insects_Meat_try']
+pink_values = [33, 147, 28, 123]
+blue_values = [25478, 15193, 24370, 114490]
+
+# Plotting
+fig, ax = plt.subplots()
+
+# Plotting pink line (mapped sequences)
+ax.plot(x_labels, pink_values, marker='o', color='red', label='Mapped Sequences')
+
+# Plotting blue line (total sequences)
+ax.plot(x_labels, blue_values, marker='o', color='blue', label='Total Sequences')
+
+# Add labels and title
+ax.set_xlabel('Name of Directory')
+ax.set_ylabel('Number of Sequences')
+ax.set_title('Mapped Sequences Variations')
+ax.legend()
+
+# Annotating pink values
+for i, value in enumerate(pink_values):
+    ax.annotate(str(value), (x_labels[i], value), textcoords="offset points", xytext=(0,10), ha='center')
+
+# Annotating blue values
+for i, value in enumerate(blue_values):
+    ax.annotate(str(value), (x_labels[i], value), textcoords="offset points", xytext=(0,10), ha='center')
+
+# Save plot as image in output folder
+plt.savefig('/dania/working/mapped_sequences_line_plot.png')
+
+# Show plot
+plt.show()
