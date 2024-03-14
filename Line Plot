@@ -1,0 +1,40 @@
+import matplotlib.pyplot as plt
+
+# Data
+samples = ['Insects_Meat', 'Mosquito_Try', 'Mosquito_Turtle', 'Nici']
+total_reads = [114490, 15193, 24370, 25478]
+mapped_mosquitoes = [123, 294, 28, 33]
+mapped_vertebrates = [6380, 45, 0, 0]
+
+# Plot
+plt.figure(figsize=(10, 6))
+
+# Line plot for total reads
+plt.plot(samples, total_reads, marker='o', color='blue', label='Total Reads')
+
+# Line plot for mapped reads to COI gene for mosquitoes
+plt.plot(samples, mapped_mosquitoes, marker='o', color='green', label='Mapped Reads to COI gene (Mosquitoes)')
+
+# Line plot for mapped reads to COI gene for vertebrates
+plt.plot(samples, mapped_vertebrates, marker='o', color='red', label='Mapped Reads to COI gene (Vertebrates)')
+
+# Add xticks and rotate labels
+plt.xticks(rotation=45)
+
+# Add labels and title
+plt.xlabel('Samples')
+plt.ylabel('Number of Reads')
+plt.title('Mapped Reads in Different Samples')
+
+# Add legend
+plt.legend()
+
+# Show plot
+plt.grid(True)
+plt.tight_layout()
+
+# Save plot
+plt.savefig('/dania/working/mapped_reads_plot.png')
+
+# Show plot
+plt.show()
