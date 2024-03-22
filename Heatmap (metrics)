@@ -1,0 +1,40 @@
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+​
+# Define the directory names and metric names
+directory_names = ["Insects_Meat_Try", "Nici", "Mosquito_Turtle", "Mosquito_Try"]
+metric_names = ["Mean read length", "Mean read quality", "Median read length", 
+                "Median read quality", "Read length N50", "STDEV read length", 
+                "Total bases", "Number of reads"]
+​
+# Define the values for each directory (dataset) and metric
+values = np.array([
+    [837.7, 10.0, 470.0, 10.6, 1371.0, 985.0, 95908291.0, 114490.0],
+    [774.4, 10.3, 444.0, 11.0, 1245.0, 908.5, 19730311.0, 25478.0],
+    [822.8, 10.3, 448.0, 11.0, 1347.0, 1258.5, 20050445.0, 24370.0],
+    [678.1, 9.9, 377.0, 10.5, 973.0, 1196.1, 10302242.0, 15193.0]
+])
+​
+# Create a heatmap with the "viridis" colormap for better color perception
+plt.figure(figsize=(12, 8))
+sns.heatmap(values, annot=True, cmap="viridis", fmt=".1f", 
+            xticklabels=metric_names, yticklabels=directory_names)
+​
+plt.title('Heatmap of Summary Statistics', fontsize=16)
+plt.xlabel('Metrics', fontsize=14)
+plt.ylabel('Directories', fontsize=14)
+​
+# Rotate labels for better readability
+plt.xticks(rotation=45, ha='right', fontsize=10)
+plt.yticks(rotation=0, fontsize=10)
+​
+# Adjust layout
+plt.tight_layout()
+​
+# Save the heatmap image
+plt.savefig('/dania/working/heatmap_summary_statistics_directories_viridis.png')
+​
+# Display the heatmap
+plt.show()
+​
